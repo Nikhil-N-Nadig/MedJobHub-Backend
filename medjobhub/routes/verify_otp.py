@@ -1,4 +1,4 @@
-from medjobhub import app, request, session, db, os,secrets
+from medjobhub import app, request, session, db, os,secrets,allowed_url,cross_origin
 from medjobhub.models import User
 from flask import jsonify
 
@@ -6,6 +6,7 @@ SECRET_KEY = os.getenv("SECRET_KEY", "default_secret_key")
 
 #Verify_Otp
 @app.route('/verify_otp', methods=['POST'])
+@cross_origin(origin=allowed_url, supports_credentials=True)
 def verify_otp():
     try:
         data = request.json
@@ -14,9 +15,11 @@ def verify_otp():
 
         if not username or not entered_otp:
             return jsonify({"success": False, "message": "Username and OTP are required."}), 400
-
-        stored_otp = session.pop(f"otp_{username}", None)
+        
         print(f"Username recieved at verify page is: ",{username})
+        print("sessions",session.items())
+        
+        stored_otp = session[f"otp_{username}"]
         print(f"OTP recieved at verify page is: ",{stored_otp})
         if stored_otp and int(entered_otp) == stored_otp:
             user = User.query.filter_by(username=username).first()

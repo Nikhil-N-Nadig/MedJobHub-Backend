@@ -31,6 +31,7 @@ Best regards, MedJobHub Team
 
 #SignIn
 @app.route('/signin', methods=['POST'])
+@cross_origin(origin=allowed_url, supports_credentials=True)
 def signin():
     session.clear()  
     data = request.json  
@@ -44,7 +45,8 @@ def signin():
             if not user.is_verified:
                 otp = random.randint(100000, 999999)
                 session[f"otp_{username}"] = otp
-                print(f"Generated OTP for {username}: {otp}")  
+                print(f"Generated OTP for {username}: {session[f"otp_{username}"]}")  
+                print("sessions",session.items())
 
                 if send_email(user.email, otp, username):
                     return jsonify({
