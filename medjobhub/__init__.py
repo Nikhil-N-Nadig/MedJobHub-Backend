@@ -20,7 +20,6 @@ from flask_cors import CORS,cross_origin
 from config import Config
 from flask_restful import fields, marshal
 from dotenv import load_dotenv
-from flask_socketio import SocketIO, join_room, emit
 
 load_dotenv()
 
