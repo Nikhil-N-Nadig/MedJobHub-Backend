@@ -32,7 +32,7 @@ db = SQLAlchemy()
 db.init_app(app)
 
 #http://medjobhub.com
-allowed_url="http://localhost:5173"
+allowed_url="https://medjobhub.vercel.app"
 CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}}, supports_credentials=True)
 
 app.config.from_object(Config) 
