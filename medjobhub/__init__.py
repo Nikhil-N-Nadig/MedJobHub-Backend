@@ -20,6 +20,7 @@ from flask_cors import CORS,cross_origin
 from config import Config
 from flask_restful import fields, marshal
 from dotenv import load_dotenv
+from flask_session import Session
 
 load_dotenv()
 
@@ -45,6 +46,15 @@ otp_storage = {}
 upload_folder = os.path.join(os.getcwd(), 'uploads')
 if not os.path.exists(upload_folder):
     os.makedirs(upload_folder)
+
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_KEY_PREFIX'] = 'otp_'
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "supersecret")
+
+Session(app)
+
 
 
 app.config["SESSION_PERMANENT"] = False

@@ -43,7 +43,7 @@ def signin():
         if check_password_hash(user.password, password):
             if not user.is_verified:
                 otp = random.randint(100000, 999999)
-                session[f"otp_{username}"] = otp 
+                session[f"otp_{username}"] = otp
                 print(f"Generated OTP for {username}: {otp}")  
 
                 if send_email(user.email, otp, username):

@@ -15,7 +15,9 @@ def verify_otp():
         if not username or not entered_otp:
             return jsonify({"success": False, "message": "Username and OTP are required."}), 400
 
-        stored_otp = session.pop(f"otp_{username}", None)  
+        stored_otp = session.pop(f"otp_{username}", None)
+        print(f"Username recieved at verify page is: ",{username})
+        print(f"OTP recieved at verify page is: ",{stored_otp})
         if stored_otp and int(entered_otp) == stored_otp:
             user = User.query.filter_by(username=username).first()
             if user:
