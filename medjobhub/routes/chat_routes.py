@@ -1,5 +1,5 @@
 from flask import request, jsonify, session, send_from_directory
-from flask_socketio import emit, join_room, leave_room, send
+from flask_socketio import emit, join_room, leave_room
 from medjobhub import app, db, socketio
 from medjobhub.models import ChatMessage, User
 from datetime import datetime
@@ -154,6 +154,7 @@ def handle_join_chat(data):
         
         room = f"chat_{min(user_id, partner_id)}_{max(user_id, partner_id)}"
         
+        # store socket id (sid) so we can target the user's connection correctly
         active_users[user_id] = request.sid
         
         join_room(room)
@@ -243,11 +244,8 @@ def handle_send_message(data):
             'room': room
         }
         
-        # Emit to all users in the room
         emit('receive_message', message_data, room=room)
         
-        # If receiver is not in room, you might want to send a notification
-        # This is optional - you can implement push notifications here
         
         print(f"Message sent in room {room}: {message}")
         
@@ -297,7 +295,11 @@ def search_users():
             return jsonify({"success": False, "message": "User not found"}), 404
         
         search_query = request.args.get('q', '').strip()
-        user_role = request.args.get('role', '')  # Filter by role
+        # Filter by role - only allow known roles to avoid typos like "jomsg"
+        user_role = request.args.get('role', '').strip()
+        allowed_roles = {'job_seeker', 'employer'}
+        if user_role and user_role not in allowed_roles:
+            return jsonify({"success": False, "message": "Invalid role filter"}), 400
         
         query = User.query.filter(User.id != user_id, User.is_verified == True)
         
@@ -403,11 +405,3 @@ def get_unread_count():
     
     except Exception as e:
         return jsonify({"success": False, "message": str(e)}), 500
-
-@app.route('/chat-test')
-def chat_test():
-    """Serve the chat test HTML page"""
-    try:
-        return send_from_directory(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), 'chat_test.html')
-    except Exception as e:
-        return f"Error loading chat test: {str(e)}", 500
