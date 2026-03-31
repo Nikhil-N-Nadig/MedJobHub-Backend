@@ -1,4 +1,4 @@
-from medjobhub import app,db
+from medjobhub import app, db, socketio
 from medjobhub.models import User
 if __name__ == '__main__':
     with app.app_context():
@@ -10,4 +10,4 @@ if __name__ == '__main__':
             user.is_verified = False
         db.session.commit()
 
-    app.run(debug=True, port=5001)
+    socketio.run(app, debug=True, port=5001, allow_unsafe_werkzeug=True)

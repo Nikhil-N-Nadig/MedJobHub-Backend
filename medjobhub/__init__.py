@@ -21,6 +21,7 @@ from config import Config
 from flask_restful import fields, marshal
 from dotenv import load_dotenv
 from flask_session import Session
+from flask_socketio import SocketIO
 
 load_dotenv()
 
@@ -56,7 +57,8 @@ app.config['SECRET_KEY'] = os.getenv("SECRET_KEY", "supersecret")
 
 Session(app)
 
-
+#Socker init
+socketio = SocketIO(app, cors_allowed_origins="http://localhost:5173", async_mode='threading')
 
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -76,5 +78,5 @@ def allowed_file(filename):
     allowed_extensions = {'pdf', 'doc', 'docx', 'jpg', 'png'}
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in allowed_extensions
 
-from medjobhub.models import User, Job, UserProfile,JobApplication
-from medjobhub.routes import signin,signup,verify_otp,logout,job_cards,application_cards,contact_us,profile
+from medjobhub.models import User, Job, UserProfile, JobApplication, ChatMessage
+from medjobhub.routes import signin,signup,verify_otp,logout,job_cards,application_cards,contact_us,chat_routes
